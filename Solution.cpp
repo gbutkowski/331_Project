@@ -12,7 +12,7 @@
 using namespace std;
 class Solution {
 private:
-    int problem;
+    int problem;//h
     Graph graph; // this is your graph (see graph.h for details)
     vector<Client> clients; // here are your clients (for full client details see objects.h)
     vector<int> bandwidths; // bandwidths for each node
