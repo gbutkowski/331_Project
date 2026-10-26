@@ -61,8 +61,9 @@ public class Solution {
 
         for (Client c : clients) {
             ArrayList<Integer> path = new ArrayList<>();
+            path = routing(c.id, deadline.get(c.id));
             if (path == null)
-                path = routing(c.id, deadline.get(c.id));
+                path = sol.paths.get(c.id);
             reserve(path);
             sol.paths.put(c.id, path);
         }
@@ -144,10 +145,12 @@ public class Solution {
                 usage.put(u, use);  //update if null at current node
             }
 
-            while (use.size() <= tick) {
-                use.set(tick, use.get(tick) +1);    //set new value
-                curr = tick + 1;
-            }
+            while (use.size() <= tick)
+                use.add(0);
+
+            use.set(tick, use.get(tick) +1);    //set new value
+            curr = tick + 1;
+
         }
 
         return curr;
