@@ -49,6 +49,13 @@ public class Solution {
         //base paths to compare later
         sol.paths = bfsPaths(graph, clients);
 
+        //increase bandwidth at every node by 14
+        ArrayList<Integer> newBandwidth = new ArrayList<>(bandwidths);
+        for (int i = 0; i < newBandwidth.size(); i++) {
+                newBandwidth.set(i, newBandwidth.get(i) + 14);
+        }
+        sol.bandwidths = newBandwidth;
+
         //min distance per client path
         HashMap<Integer, Integer> dist = Traversals.bfs(graph, clients);
         ArrayList<Client> sorted = new ArrayList<>(clients);
