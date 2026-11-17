@@ -31,6 +31,33 @@ public class Solution {
         this.bandwidths = info.bandwidths;
     }
 
+    //function to determine bandwidth increase by simulating and comparing
+    private int build(SolutionObject sol) {
+        SolutionObject sim = new SolutionObject();
+
+        sim.priorities = sol.priorities;
+        sim.paths = sol.paths;
+        int bw = 0;
+        float best = -10000;
+        int count = 0;
+
+        for (int i = 0; i <20; i++) {
+            ArrayList<Integer> newBandwidth = new ArrayList<>(bandwidths);
+            for (int j = 0; j < newBandwidth.size(); j++) {
+                newBandwidth.set(j, newBandwidth.get(j) + i);
+            }
+            sim.bandwidths = newBandwidth;
+
+            boolean bbw = !info.bandwidths.equals(sim.bandwidths);
+            HashMap<Integer, Integer> delays = Simulator.run(graph, clients, sim);
+            float score = Revenue.revenue(info, sim, delays, true, true, bbw);
+            if (score > best) {best = score; bw = i;}
+            count++;
+        }
+
+        return bw;
+    }
+
     /**
      * Method that returns the calculated 
      * SolutionObject as found by your algorithm
@@ -48,13 +75,6 @@ public class Solution {
         }
         //base paths to compare later
         sol.paths = bfsPaths(graph, clients);
-
-        //increase bandwidth at every node by 14
-        ArrayList<Integer> newBandwidth = new ArrayList<>(bandwidths);
-        for (int i = 0; i < newBandwidth.size(); i++) {
-                newBandwidth.set(i, newBandwidth.get(i) + 14);
-        }
-        sol.bandwidths = newBandwidth;
 
         //min distance per client path
         HashMap<Integer, Integer> dist = Traversals.bfs(graph, clients);
@@ -85,6 +105,17 @@ public class Solution {
             reserve(path);
             sol.paths.put(c.id, path);
         }
+
+        int bw = build(sol);
+        System.out.println(bw);
+
+        usage.clear();
+        //increase bandwidth at every node by bw
+        ArrayList<Integer> newBandwidth = new ArrayList<>(bandwidths);
+        for (int i = 0; i <newBandwidth.size(); i++) {
+            newBandwidth.set(i, newBandwidth.get(i) + bw);
+        }
+        sol.bandwidths = newBandwidth;
 
         //need to check if bandwidth is exceeded at any node at any tick such that a delay may exist, so track packets around and get totals at each tick
         //then check if there are nodes we can reroute, and reroute them
